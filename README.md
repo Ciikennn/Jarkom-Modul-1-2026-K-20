@@ -248,8 +248,6 @@ Buka Wireshark, filter `ftp`, lalu temukan tiga hal berikut:
 | Status sukses server | `Response: 226 Transfer complete` |
 | Port data PASV | `Response: 227 Entering Passive Mode (192,231,2,2,X,Y)` → port = `(X × 256) + Y` |
 
-### 8.5 Bukti Mika read-only (download boleh, upload ditolak)
-![mikatolak](images/mikatolak.png)
 
 Di **Console Mika**, buat file dummy untuk memancing error:
 ```bash
@@ -265,9 +263,5 @@ put file_mika.txt             # ditolak  -> bukti TIDAK ADA hak WRITE
 exit
 ```
 
-**Hasil yang diharapkan** saat `put`:
-```
-put: Access failed: 550 Permission denied. (file_mika.txt)
-```
-Screenshot pesan `550 Permission denied` ini menjadi bukti `write_enable=NO` untuk Mika sudah bekerja.
+![mikatolak](images/mikatolak1.png)
 
