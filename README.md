@@ -91,3 +91,4 @@ jalankan
 ```
 /root/cek_status.sh
 ```
+![no 5](images/no6.png)
