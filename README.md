@@ -105,3 +105,106 @@ klik kanan pada yang ingin di capture lalu jalankan whiteshark saat itu klik fil
 dns || icmp
 ```
 ![dnsicmp](images/dnsicmp.png)
+
+7.
+### 7.1 Install vsftpd & buat user
+
+Di **Console Chisa**:
+```bash
+apt update && apt install vsftpd -y
+useradd -m alice && echo "alice:123" | chpasswd
+useradd -m mika && echo "mika:123" | chpasswd
+useradd -m eiri && echo "eiri:123" | chpasswd
+```
+
+### 7.2 Buat shared folder
+
+```bash
+mkdir -p /var/wired/data
+chown -R ftp:ftp /var/wired/data
+chmod 755 /var/wired/data
+```
+
+### 7.3 Konfigurasi `/etc/vsftpd.conf`
+
+```bash
+nano /etc/vsftpd.conf
+```
+
+Pastikan baris-baris berikut ada/disesuaikan:
+```
+listen=YES
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+dirmessage_enable=YES
+use_localtime=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+chroot_local_user=YES
+secure_chroot_dir=/var/run/vsftpd/empty
+pam_service_name=vsftpd
+local_root=/var/wired/data
+pasv_enable=YES
+pasv_min_port=40000
+pasv_max_port=50000
+user_config_dir=/etc/vsftpd_user_conf
+userlist_enable=YES
+userlist_file=/etc/vsftpd.user_list
+userlist_deny=YES
+```
+Simpan dengan `Ctrl+O`, Enter, lalu keluar dengan `Ctrl+X`.
+
+### 7.4 Hak akses per-user (Alice R/W, Mika Read-only, Eiri blacklist)
+
+```bash
+mkdir -p /etc/vsftpd_user_conf
+
+# Alice -> Read & Write
+echo "write_enable=YES" > /etc/vsftpd_user_conf/alice
+
+# Mika -> Read-only
+echo "write_enable=NO" > /etc/vsftpd_user_conf/mika
+
+# Eiri -> Blacklist (tidak boleh login sama sekali)
+echo "eiri" >> /etc/vsftpd.user_list
+```
+
+### 7.5 Jalankan ulang service vsftpd
+
+```bash
+/etc/init.d/vsftpd restart
+```
+
+**Verifikasi service aktif:**
+```bash
+ss -tuln | grep :21
+```
+Port 21 harus berstatus `LISTEN`.
+
+### 7.6 Pembuktian: Alice bisa upload (`signal_alice.txt`)
+
+Di **Console Alice**, buat file yang akan diupload:
+```bash
+echo "Ini pesan dari Alice" > signal_alice.txt
+```
+
+Login FTP ke Chisa lalu upload:
+```bash
+ftp 192.231.2.2
+# user: alice
+# password: 123
+put signal_alice.txt
+exit
+```
+
+Di **Console Eiri**, coba login FTP:
+```bash
+ftp 192.231.2.2
+# user: eiri
+# password: 123
+```
+Hasil yang diharapkan: koneksi langsung ditolak dengan pesan `530 Permission denied` / login failed — bukti bahwa Eiri sudah masuk `userlist_deny` dan tidak bisa mengakses FTP sama sekali.
+
+![ftp](images/ftp.png)
