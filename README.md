@@ -94,4 +94,14 @@ jalankan
 ![no 5](images/no6.png)
 
 6.
-
+di console mika
+```
+wget [MASUKKAN_LINK_URL_FILE_DI_SINI] -O traffic_generator.sh
+chmod +x traffic_generator.sh
+./traffic_generator.sh
+```
+klik kanan pada yang ingin di capture lalu jalankan whiteshark saat itu klik filternya
+```
+dns || icmp
+```
+![dnsicmp](images/dnsicmp.png)
