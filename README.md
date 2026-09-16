@@ -107,7 +107,6 @@ dns || icmp
 ![dnsicmp](images/dnsicmp.png)
 
 7.
-### 7.1 Install vsftpd & buat user
 
 Di **Console Chisa**:
 ```bash
@@ -117,7 +116,6 @@ useradd -m mika && echo "mika:123" | chpasswd
 useradd -m eiri && echo "eiri:123" | chpasswd
 ```
 
-### 7.2 Buat shared folder
 
 ```bash
 mkdir -p /var/wired/data
@@ -125,13 +123,11 @@ chown -R ftp:ftp /var/wired/data
 chmod 755 /var/wired/data
 ```
 
-### 7.3 Konfigurasi `/etc/vsftpd.conf`
 
 ```bash
 nano /etc/vsftpd.conf
 ```
 
-Pastikan baris-baris berikut ada/disesuaikan:
 ```
 listen=YES
 anonymous_enable=NO
@@ -154,9 +150,7 @@ userlist_enable=YES
 userlist_file=/etc/vsftpd.user_list
 userlist_deny=YES
 ```
-Simpan dengan `Ctrl+O`, Enter, lalu keluar dengan `Ctrl+X`.
 
-### 7.4 Hak akses per-user (Alice R/W, Mika Read-only, Eiri blacklist)
 
 ```bash
 mkdir -p /etc/vsftpd_user_conf
@@ -207,4 +201,4 @@ ftp 192.231.2.2
 ```
 Hasil yang diharapkan: koneksi langsung ditolak dengan pesan `530 Permission denied` / login failed — bukti bahwa Eiri sudah masuk `userlist_deny` dan tidak bisa mengakses FTP sama sekali.
 
-![ftp](images/ftp.png)
+![ftp](images/no7.png)
