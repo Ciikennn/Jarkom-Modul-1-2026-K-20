@@ -202,3 +202,72 @@ ftp 192.231.2.2
 Hasil yang diharapkan: koneksi langsung ditolak dengan pesan `530 Permission denied` / login failed — bukti bahwa Eiri sudah masuk `userlist_deny` dan tidak bisa mengakses FTP sama sekali.
 
 ![ftp](images/no7.png)
+
+8.
+
+Di **Console Knights**:
+```bash
+cat << 'EOF' > knights_report.txt
+==================================================
+  KNIGHTS OF THE EASTERN CALCULUS — STATUS REPORT
+  Protocol 7 Surveillance Network
+  Classification: LEVEL 7 — EYES ONLY
+==================================================
+
+Date: [CLASSIFIED]
+Agent: Knights Unit Alpha
+Node: Switch 3 — Subnet 192.231.3.0/24
+
+---
+SUBJECT: Network Reconnaissance Report
+The Wired has been successfully infiltrated through Protocol 7 channels.
+--- END OF REPORT ---
+EOF
+```
+
+### 8.2 Mulai capture Wireshark
+
+Di **GNS3**, klik kanan kabel yang terhubung ke node Knights (atau Chisa) → **Start capture**. Biarkan merekam sebelum upload dilakukan.
+
+### 8.3 Login FTP dari Knights memakai akun `alice`
+
+```bash
+lftp -u alice 192.231.2.2
+# password: 123
+put knights_report.txt
+exit
+```
+
+### 8.4 Analisis di Wireshark (jawaban laporan)
+
+Buka Wireshark, filter `ftp`, lalu temukan tiga hal berikut:
+
+| Yang dicari | Info di Wireshark |
+|---|---|
+| Perintah upload | `Request: STOR knights_report.txt` |
+| Status sukses server | `Response: 226 Transfer complete` |
+| Port data PASV | `Response: 227 Entering Passive Mode (192,231,2,2,X,Y)` → port = `(X × 256) + Y` |
+
+### 8.5 Bukti Mika read-only (download boleh, upload ditolak)
+![mikatolak](images/mikatolak.png)
+
+Di **Console Mika**, buat file dummy untuk memancing error:
+```bash
+echo "Ini file percobaan upload dari Mika" > file_mika.txt
+```
+
+Login dan uji hak akses:
+```bash
+lftp -u mika 192.231.2.2
+# password: 123
+get protocol7_manifesto.txt   # berhasil -> bukti hak READ
+put file_mika.txt             # ditolak  -> bukti TIDAK ADA hak WRITE
+exit
+```
+
+**Hasil yang diharapkan** saat `put`:
+```
+put: Access failed: 550 Permission denied. (file_mika.txt)
+```
+Screenshot pesan `550 Permission denied` ini menjadi bukti `write_enable=NO` untuk Mika sudah bekerja.
+
