@@ -238,17 +238,6 @@ put knights_report.txt
 exit
 ```
 
-### 8.4 Analisis di Wireshark (jawaban laporan)
-
-Buka Wireshark, filter `ftp`, lalu temukan tiga hal berikut:
-
-| Yang dicari | Info di Wireshark |
-|---|---|
-| Perintah upload | `Request: STOR knights_report.txt` |
-| Status sukses server | `Response: 226 Transfer complete` |
-| Port data PASV | `Response: 227 Entering Passive Mode (192,231,2,2,X,Y)` → port = `(X × 256) + Y` |
-
-
 Di **Console Mika**, buat file dummy untuk memancing error:
 ```bash
 echo "Ini file percobaan upload dari Mika" > file_mika.txt
