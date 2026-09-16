@@ -177,7 +177,7 @@ ss -tuln | grep :21
 ```
 Port 21 harus berstatus `LISTEN`.
 
-### 7.6 Pembuktian: Alice bisa upload (`signal_alice.txt`)
+### Pembuktian: Alice bisa upload (`signal_alice.txt`)
 
 Di **Console Alice**, buat file yang akan diupload:
 ```bash
@@ -225,11 +225,11 @@ The Wired has been successfully infiltrated through Protocol 7 channels.
 EOF
 ```
 
-### 8.2 Mulai capture Wireshark
+### Mulai capture Wireshark
 
 Di **GNS3**, klik kanan kabel yang terhubung ke node Knights (atau Chisa) → **Start capture**. Biarkan merekam sebelum upload dilakukan.
 
-### 8.3 Login FTP dari Knights memakai akun `alice`
+### Login FTP dari Knights memakai akun `alice`
 
 ```bash
 lftp -u alice 192.231.2.2
@@ -253,4 +253,7 @@ exit
 ```
 
 ![mikatolak](images/mikatolak1.png)
+
+9.
+
 
