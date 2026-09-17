@@ -1,4 +1,4 @@
-# Jarkom-Modul-1-2026-K-20
+# Jarkom-Modul-1-2026-K-40
 
 1. TOPLOPOGI
    ![topologi](images/topologi.png)
