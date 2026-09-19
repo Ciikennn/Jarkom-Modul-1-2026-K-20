@@ -388,7 +388,7 @@ Klik salah satu paket Echo (ping) request dan Echo (ping) reply, lalu screenshot
 
 11. 
 
-10.1 Install Telnet server & buat akun phantom (Console Chisa)
+11.1 Install Telnet server & buat akun phantom (Console Chisa)
 ```
 apt update && apt install telnetd openbsd-inetd -y
 useradd -m phantom_user && echo "phantom_user:wired_ghost" | chpasswd
@@ -424,6 +424,7 @@ telnet 192.231.2.2
 # Password: wired_ghost
 exit
 ```
+![mikatolak](images/no11.png)
 
 
 12. Port Scanning dengan Netcat (Alice → Knights)
@@ -456,6 +457,12 @@ apt update && apt install netcat-traditional -y
 nc -zv 192.231.3.2 22 80 7777
 ```
 Hasil yang diharapkan:
+
+
+![mikatolak](images/no10.png)
+![mikatolak](images/no10-1.png)
+![mikatolak](images/no10-2.png)
+![mikatolak](images/no10-3.png)
 
 
 Ambil 2 screenshot: satu untuk SYN-ACK (port 22/80), satu untuk RST-ACK (port 7777).
