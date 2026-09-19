@@ -263,7 +263,9 @@ cat knights_report.txt
 Di GNS3, klik kanan kabel yang terhubung ke node Knights (atau Chisa) → Start capture. Lakukan sebelum upload dijalankan.
 
 
-![mikatolak](images/mikatolak1.png)
+![dnsicmp](images/no8.png)
+![dnsicmp](images/no8-1.png)
+
 
 9.Mika Mengakses Dokumen Protokol Tujuh (Uji Read-Only FTP)
 
