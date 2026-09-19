@@ -204,8 +204,15 @@ Hasil yang diharapkan: koneksi langsung ditolak dengan pesan `530 Permission den
 
 8.
 
-Di **Console Knights**:
-```bash
+
+
+
+
+Cara A — copy-paste manual (paling gampang, tanpa perlu internet penuh di Knights):
+
+Buka link folder itu di browser laptop kamu, download file di dalamnya, buka dengan text editor, copy semua isinya.
+Di Console Knights:
+```
 cat << 'EOF' > knights_report.txt
 ==================================================
   KNIGHTS OF THE EASTERN CALCULUS — STATUS REPORT
@@ -215,41 +222,46 @@ cat << 'EOF' > knights_report.txt
 
 Date: [CLASSIFIED]
 Agent: Knights Unit Alpha
-Node: Switch 3 — Subnet 192.231.3.0/24
+Node: Switch 3 — Subnet 10.<PREFIX>.3.0/24
 
 ---
+
 SUBJECT: Network Reconnaissance Report
-The Wired has been successfully infiltrated through Protocol 7 channels.
+
+The Wired has been successfully infiltrated through
+Protocol 7 channels. Current observations:
+
+1. Router "Lain" has been identified as the central
+   gateway node connecting all three subnet segments.
+
+2. Switch 1 (10.<PREFIX>.1.0/24) hosts Alice and Mika.
+   Both nodes show standard traffic patterns.
+
+3. Switch 2 (10.<PREFIX>.2.0/24) hosts Chisa alone.
+   Isolated subnet — minimal cross-traffic observed.
+
+4. Switch 3 (10.<PREFIX>.3.0/24) — our operational base.
+   Knights and Eiri coexist on this segment.
+
+RECOMMENDATION:
+Continue monitoring FTP and Telnet sessions for
+plaintext credential exposure. SSH tunnels remain
+impenetrable without keylog access.
+
 --- END OF REPORT ---
+Knights of the Eastern Calculus
+"Let's all love Lain."
 EOF
 ```
 
-### Mulai capture Wireshark
-
-Di **GNS3**, klik kanan kabel yang terhubung ke node Knights (atau Chisa) → **Start capture**. Biarkan merekam sebelum upload dilakukan.
-
-### Login FTP dari Knights memakai akun `alice`
-
-```bash
-lftp -u alice 192.231.2.2
-# password: 123
-put knights_report.txt
-exit
 ```
-
-Di **Console Mika**, buat file dummy untuk memancing error:
-```bash
-echo "Ini file percobaan upload dari Mika" > file_mika.txt
+ls -l knights_report.txt
+cat knights_report.txt
 ```
+8.2 Mulai capture Wireshark
 
-Login dan uji hak akses:
-```bash
-lftp -u mika 192.231.2.2
-# password: 123
-get protocol7_manifesto.txt   # berhasil -> bukti hak READ
-put file_mika.txt             # ditolak  -> bukti TIDAK ADA hak WRITE
-exit
-```
+Di GNS3, klik kanan kabel yang terhubung ke node Knights (atau Chisa) → Start capture. Lakukan sebelum upload dijalankan.
+
 
 ![mikatolak](images/mikatolak1.png)
 
@@ -337,6 +349,9 @@ echo "Ini file percobaan upload dari Mika" > file_mika.txt
 bash
 lftp -u mika 192.231.2.2
 # password: 123
+
+![mikatolak](images/mikatolak1.png)
+
 
 10. 
 
