@@ -379,6 +379,13 @@ icmp
 Klik salah satu paket Echo (ping) request dan Echo (ping) reply, lalu screenshot bagian Internet Control Message Protocol di panel detail Wireshark untuk menunjukkan nilai Type dan Code di atas sebagai bukti.
 
 10.4 
+![mikatolak](images/no10.png)
+![mikatolak](images/no10-1.png)
+![mikatolak](images/no10-2.png)
+![mikatolak](images/no10-3.png)
+
+
+
 11. 
 
 10.1 Install Telnet server & buat akun phantom (Console Chisa)
@@ -418,7 +425,6 @@ telnet 192.231.2.2
 exit
 ```
 
-Screenshot jendela Follow TCP Stream ini jadi bukti bahwa Telnet tidak aman — bandingkan nanti dengan hasil SSH di bagian 13 yang sudah terenkripsi.
 
 12. Port Scanning dengan Netcat (Alice → Knights)
 
@@ -492,6 +498,7 @@ Di Console Mika:
 
 bash
 ssh mika_admin@192.231.3.2
+
 
 
 14. Pada soal ini kita diminta mengidentifikasi alamat IP penyerang, target IP beserta port yang diserang, password user lain_admin, serta web server software dan versi yang dilaporkan pada file capture bruteforce.
