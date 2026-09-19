@@ -379,10 +379,7 @@ icmp
 Klik salah satu paket Echo (ping) request dan Echo (ping) reply, lalu screenshot bagian Internet Control Message Protocol di panel detail Wireshark untuk menunjukkan nilai Type dan Code di atas sebagai bukti.
 
 10.4 
-![mikatolak](images/no10.png)
-![mikatolak](images/no10-1.png)
-![mikatolak](images/no10-2.png)
-![mikatolak](images/no10-3.png)
+![mikatolak](images/no10asli.png)
 
 
 
