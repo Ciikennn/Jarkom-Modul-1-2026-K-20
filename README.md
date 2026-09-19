@@ -63,9 +63,8 @@ ip route add default via [IP_ROUTER_LAIN]
 ```
 3&4. 
 ```
-nameserver 8.8.8.8" > /etc/resolv.conf
+"nameserver 8.8.8.8" > /etc/resolv.conf
 ```
-dan ping client(192.231.x.x)
 5.
 buat skrip di lain  /root/cek_status.sh
 ```
@@ -254,6 +253,225 @@ exit
 
 ![mikatolak](images/mikatolak1.png)
 
-9.
+9.Mika Mengakses Dokumen Protokol Tujuh (Uji Read-Only FTP)
+
+Soal: unduh dokumen dari link Google Drive ke FTP Server Chisa, lalu dari node Mika unduh file itu pakai akun mika, dan buktikan pembatasan read-only (upload ditolak 550).
+
+9.1 
+```
+
+Di Console Chisa, jalankan cat << 'EOF' > /var/wired/data/protocol7_manifesto.txt, lalu paste isi file tadi, tutup dengan EOF:
+bash
+cat << 'EOF' > /var/wired/data/protocol7_manifesto.txt
+==================================================
+  PROTOCOL 7 — THE MANIFESTO
+  A Declaration of Digital Consciousness
+  Serial Experiments Lain — Year 2026
+==================================================
+
+ARTICLE I: THE NATURE OF THE WIRED
+-----------------------------------
+The Wired is not merely a network of interconnected
+machines. It is the collective unconscious of
+humanity, rendered in packets and protocols.
+
+Every TCP handshake is a conversation.
+Every DNS query is a question.
+Every encrypted tunnel is a whispered secret.
+
+ARTICLE II: THE SEVEN PRINCIPLES
+----------------------------------
+1. All nodes are equal in the eyes of the router.
+2. No packet shall be dropped without cause.
+3. Encryption is the right of every connection.
+4. Plaintext protocols expose the vulnerable.
+5. The firewall protects, but also imprisons.
+6. NAT masquerade hides truth behind a single face.
+7. The Wired remembers everything — packet loss
+   is merely a temporary forgetting.
+
+ARTICLE III: THE PROPHECY OF LAIN
+-----------------------------------
+"If you're not remembered, then you never existed."
+
+In the world of networking, persistence is survival.
+A configuration that vanishes upon restart is a
+thought that was never truly committed to memory.
+
+Therefore: Save your iptables. Write your interfaces.
+Let your routing tables endure beyond the power cycle.
+
+ARTICLE IV: CONCERNING SECURITY
+---------------------------------
+Telnet is the glass house of protocols — transparent
+to any observer with a packet sniffer.
+
+SSH is the steel vault — its contents visible only
+to those who possess the key.
+
+Choose wisely which door you open to The Wired.
+
+---
+"No matter where you go, everyone's connected."
+— Lain Iwakura
+
+EOF
+```
+lalau
+```
+
+bash
+apt update && apt install python3-pip -y
+pip3 install gdown --break-system-packages
+```
+
+```
+cat /var/wired/data/protocol7_manifesto.txt
+```
+9.2 Siapkan file dummy untuk uji upload (Console Mika)
+bash
+```
+echo "Ini file percobaan upload dari Mika" > file_mika.txt
+```
+9.3 Login FTP dari Mika, buktikan Read vs Write
+bash
+lftp -u mika 192.231.2.2
+# password: 123
+
+10. 
+
+Di Console Knights:
+
+```
+ping -c 77 -s 128 -i 0.3 192.231.2.2
+```
+
+Tunggu sampai selesai. Output ping akan langsung menampilkan ringkasan di baris terakhir:
+
+77 packets transmitted, 77 received, 0% packet loss, time XXXXms
+rtt min/avg/max/mdev = X.XXX/X.XXX/X.XXX/X.XXX ms
+
+Catat baris ini untuk laporan (packet loss & RTT min/avg/max sudah langsung dihitung otomatis oleh ping).
 
 
+Stop capture, lalu filter:
+```
+icmp
+```
+
+Klik salah satu paket Echo (ping) request dan Echo (ping) reply, lalu screenshot bagian Internet Control Message Protocol di panel detail Wireshark untuk menunjukkan nilai Type dan Code di atas sebagai bukti.
+
+10.4 
+11. 
+
+10.1 Install Telnet server & buat akun phantom (Console Chisa)
+```
+apt update && apt install telnetd openbsd-inetd -y
+useradd -m phantom_user && echo "phantom_user:wired_ghost" | chpasswd
+```
+
+Kalau service tidak otomatis jalan (umum terjadi di image debinet yang tanpa systemd), daftarkan manual ke inetd lalu jalankan:
+
+```
+mkdir -p /dev/pts
+```
+```
+mount -t devpts devpts /dev/pts
+```
+pkill inetd
+echo "telnet stream tcp nowait root /usr/sbin/telnetd telnetd" > /etc/inetd.conf
+/usr/sbin/inetd
+```
+Verifikasi port 23 terbuka:
+
+```
+ss -tuln | grep :23
+
+Harus muncul *:23 atau 0.0.0.0:23.
+
+
+GNS3 → klik kanan kabel node Eiri → Start capture → filter telnet. 
+
+10.3 Login Telnet dari Eiri
+```
+apt update && apt install telnet -y
+telnet 192.231.2.2
+# login: phantom_user
+# Password: wired_ghost
+exit
+```
+
+Screenshot jendela Follow TCP Stream ini jadi bukti bahwa Telnet tidak aman — bandingkan nanti dengan hasil SSH di bagian 13 yang sudah terenkripsi.
+
+12. Port Scanning dengan Netcat (Alice → Knights)
+
+Soal: pindai port 22 (SSH) dan 80 (HTTP) yang harus terbuka, serta port rahasia 7777 yang harus tertutup, dari Alice ke Knights. Analisis perbedaan TCP flag SYN-ACK (terbuka) vs RST-ACK (tertutup) di Wireshark.
+
+12.1 Nyalakan layanan SSH & HTTP di Knights
+bash
+```
+apt update && apt install openssh-server nginx -y
+/etc/init.d/ssh start
+/etc/init.d/nginx start
+```
+
+Verifikasi:
+
+bash
+ss -tuln
+
+
+12.2 Mulai capture Wireshark di Alice
+
+Di GNS3, klik kanan kabel node Alice → Start capture. Di kolom display filter Wireshark, masukkan:
+
+```
+tcp.port in {22, 80, 7777}
+12.3 Jalankan port scan dari Alice
+bash
+apt update && apt install netcat-traditional -y
+nc -zv 192.231.3.2 22 80 7777
+```
+Hasil yang diharapkan:
+
+
+Ambil 2 screenshot: satu untuk SYN-ACK (port 22/80), satu untuk RST-ACK (port 7777).
+
+13. SSH Public Key Authentication (Mika → Knights)
+
+
+13.1 Buat akun mika_admin di server (Knights)
+```
+
+useradd -m mika_admin && echo "mika_admin:123" | chpasswd
+```
+13.2 Generate SSH key pair di client (Mika)
+bash
+```
+useradd -m mika_admin
+```
+su - mika_admin
+```
+ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+```
+
+```
+ssh-copy-id mika_admin@192.231.3.2
+# ketik "yes" saat verifikasi fingerprint
+# password sementara: 123
+```
+
+Berhasil jika muncul Number of key(s) added: 1.
+
+13.4 Matikan login password di Knights
+bash
+echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+/etc/init.d/ssh restart
+13.5 Capture Wireshark & buktikan login tanpa password
+
+Di GNS3: klik kanan kabel node Mika → Start capture → filter ssh.
+
+Di Console Mika:
+
+bash
+ssh mika_admin@192.231.3.2
