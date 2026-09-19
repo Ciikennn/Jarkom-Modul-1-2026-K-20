@@ -505,6 +505,8 @@ Di Console Mika:
 ssh mika_admin@192.231.3.2
 ```
 
+![mikatolak](images/no13.png)
+![mikatolak](images/no13-1.png)
 
 
 
