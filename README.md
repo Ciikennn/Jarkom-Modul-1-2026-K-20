@@ -492,16 +492,19 @@ Berhasil jika muncul Number of key(s) added: 1.
 
 13.4 Matikan login password di Knights
 bash
+```
 echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 /etc/init.d/ssh restart
+```
 13.5 Capture Wireshark & buktikan login tanpa password
 
 Di GNS3: klik kanan kabel node Mika → Start capture → filter ssh.
 
 Di Console Mika:
-
-bash
+```
 ssh mika_admin@192.231.3.2
+```
+
 
 
 
