@@ -492,3 +492,75 @@ Di Console Mika:
 
 bash
 ssh mika_admin@192.231.3.2
+
+
+14. Pada soal ini kita diminta mengidentifikasi alamat IP penyerang, target IP beserta port yang diserang, password user lain_admin, serta web server software dan versi yang dilaporkan pada file capture bruteforce.
+
+Langkahnya adalah memfilter request http post lalu mencari satu request yang berhasil (200 OK). Dari situ terlihat ip source yang merupakan ip penyerang dan ip destination adalah ip target, serta akan terlihat detail data kredensial lain yang kita cari.
+
+![soal_14](images/req_14.png)
+![soal_14_350](images/soal_14-350.png)
+![soal_14_351](images/soal_14-351.png)
+![soal_14_val](images/val_14.png)
+
+
+15. Pada soal ini kita diminta melakukan analisis forensik USB HID untuk mengidentifikasi Vendor ID (VID), Product ID (PID), alamat device, serta menerjemahkan pesan keystroke rahasia yang diketik oleh penyerang.
+
+Langkahnya adalah membuka detail paket `GET DESCRIPTOR Response DEVICE` untuk mendapatkan VID (`0x046d`) dan PID (`0xc31c`). 
+![dev_15](images/dev_15.png)
+
+Kemudian, mencari `Device address` (`7`) pada bagian `USB URB` di paket aktif. Terakhir, memfilter paket `URB_INTERRUPT in`, mengambil data hexadecimal dari `Leftover Capture Data` menggunakan command pada kali Linux supaya tidak perlu mengecek satu-satu:
+```
+tshark -r soal15_wired_usb_hid.pcap -Y 'usb.capdata' -T fields -e usb.capdata > keystrokes.txt
+```
+
+![urb_15](images/urb_15.png)
+![key_15](images/key_15.png)
+
+Lalu menerjemahkannya menggunakan *USB HID Keyboard Scan Codes* melewati web atau langsung ke AI hingga mendapatkan pesan: `Wired_Protocol_7_is_alive_2026`.
+
+![soal_15_val](images/val_15.png)
+
+
+16. Pada soal ini kita diminta menganalisis lalu lintas FTP untuk mengidentifikasi alamat IP server FTP penyerang, banner software FTP yang digunakan, kredensial login penyerang, serta ukuran (size in bytes) dari file malware.
+
+Langkahnya adalah mengamati percakapan *Request* dan *Response* protokol FTP di Wireshark. Dari paket balasan `220 Welcome`, ditemukan IP Server (`198.51.100.7`) dan Banner Software (`vsftpd 3.0.5`). Dari paket `Request: USER` dan `PASS` ditemukan kredensial penyerang (`knights_agent` / `N4v1_s3cur3_2026`). Ukuran file (`524288`) didapatkan dengan melihat balasan paket kode `213` setelah adanya permintaan `Request: SIZE`.
+
+![soal_16](images/req_16.png)
+![kni_16](images/kni_16.png)
+![soal_16_val](images/val_16.png)
+
+
+17. Pada soal ini kita diminta mengidentifikasi nama domain (Host) tempat malware diunduh, alamat IP server penyerang, nama file executable malware yang diunduh, serta kode status HTTP.
+
+Langkahnya adalah membuka detail dari paket HTTP `GET` request. Dari bagian `Hypertext Transfer Protocol` ditemukan nama Host (`wired-update.net`), nama file URI (`navi_agent.exe`), serta IP server tujuan (`203.0.113.42`) pada bagian IPv4. Untuk menemukan kode status HTTP, kita memeriksa paket HTTP `Response` yang mengikutinya, dan ditemukan status code `200 OK`.
+
+![get_17](images/get_17.png)
+![res_17](images/res_17.png)
+![soal_17_val](images/val_17.png)
+
+
+18. Pada soal ini kita diminta mengidentifikasi nama protokol jaringan yang dieksploitasi, IP pengirim dan penerima, folder tujuan penyimpanan malware pada sistem korban, serta nama file executable malware yang ditransfer.
+
+Langkahnya adalah melihat kolom protokol di Wireshark yang mengindikasikan eksploitasi jalur *file sharing* via `SMB2`. Dari paket `Create Request` dan `Write Request`, diidentifikasi IP Pengirim penyerang (`10.7.3.100`) dan IP Penerima korban (`10.7.1.50`). Folder tujuan (`System32`) beserta nama file (`wired_trojan_payload.exe`) dapat dilihat secara langsung di dalam rincian path *File* pada informasi paket SMB2 tersebut.
+
+![smb_18](images/smb_18.png)
+![sys_18](images/sys_18.png)
+![soal_18_val](images/val_18.png)
+
+
+19. Pada soal ini kita diminta mengidentifikasi alamat email korban yang ditargetkan, password korban yang diklaim bocor oleh penyerang, jenis malware yang diinfeksikan, batas waktu (dalam hari) yang diberikan, serta MailClientID dari ancaman extortion spam.
+
+Langkahnya adalah memfilter paket dengan protokol surat (SMTP/IMF), kemudian melakukan klik kanan -> *Follow TCP Stream* untuk membaca kode sumber surat secara utuh. Dari bagian *Header* didapatkan alamat email korban (`To: victim@protocol7.co.jp`) dan `MailClientID` (`7719980706`). Dari membaca teks pada bagian *Body*, ditemukan ancaman password yang bocor (`pr0tocol_7_user`), klaim jenis malware (`ransomware`), dan tenggat waktu 72 jam yang dikonversi menjadi `3` hari.
+
+![pas_19](images/pas_19.png)
+![mac_19](images/mac_19.png)
+![vic_19](images/vic_19.png)
+![soal_19_val](images/val_19.png)
+
+20. Pada soal ini kita diminta menggunakan file keyslogfile.txt untuk mengidentifikasi versi protokol TLS yang dinegosiasikan, nama domain (SNI) yang diakses, alamat IP server HTTPS penyerang, User-Agent yang digunakan, serta HTTP request method dan path yang tersembunyi di balik enkripsi.
+
+Langkahnya adalah memasukkan file `keyslogfile.txt` ke dalam menu *Preferences* -> *Protocols* -> *TLS* di bagian *(Pre)-Master-Secret log filename* untuk membuka gembok dekripsi. Setelah didekripsi, dari paket *handshake* awal terlihat versi `TLSv1.2`, domain SNI (`example.com`), dan IP server (`93.184.216.34`). Lalu, dari paket `HTTP` yang baru saja muncul akibat dekripsi, bisa dilihat Method (`HEAD`), Path (`/`), serta pada rincian *Hypertext Transfer Protocol* ditemukan `User-Agent` (`curl/7.62.0`).
+
+![soal_20](images/req_20.png)
+![soal_20_val](images/val_20.png)
